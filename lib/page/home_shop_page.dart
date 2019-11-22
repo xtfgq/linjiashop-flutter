@@ -4,6 +4,7 @@ import 'package:flutter_app/models/category_entity.dart';
 import 'package:flutter_app/page/load_state_layout.dart';
 import 'package:flutter_app/page/swiper_diy.dart';
 import 'package:flutter_app/res/colours.dart';
+import 'package:flutter_app/utils/constants.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_app/dao/findings_dao.dart';
 import 'package:flutter_app/models/goods_entity.dart';
@@ -31,10 +32,15 @@ class _FindingsShopPageState extends State<FindingsShopPage>
   TabController mController;
 
   LoadState _layoutState = LoadState.State_Loading;
+  double width=0;
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
-
+    final screenWidth = Screen.width();
+    if(myTabs.length>0) {
+      width=(screenWidth / myTabs.length)  - 10;
+    }
     return Scaffold(
       appBar: MyAppBar(
         preferredSize: Size.fromHeight(AppSize.height(160)),
@@ -68,9 +74,9 @@ class _FindingsShopPageState extends State<FindingsShopPage>
                       unselectedLabelColor: Color(0xff333333),
                       labelStyle: TextStyle(fontSize: AppSize.sp(44)),
                       indicatorPadding: EdgeInsets.only(
-                          left: AppSize.width(80), right: AppSize.width(80)),
+                          left: AppSize.width(width), right: AppSize.width(width)),
                       labelPadding: EdgeInsets.only(
-                          left: AppSize.width(80), right: AppSize.width(80)),
+                          left: AppSize.width(width), right: AppSize.width(width)),
                       tabs: myTabs,
                     ),
                   ),
@@ -174,9 +180,16 @@ class _FindingTabViewState extends State<FindingTabView> with AutomaticKeepAlive
     if(entity?.goods != null){
       setState(() {
         goodsList.clear();
+
         goodsList = entity.goods;
         _isLoading = false;
-        _layoutState = LoadState.State_Success;
+        if(goodsList.length>0){
+          _layoutState = LoadState.State_Success;
+        }else{
+          _layoutState = LoadState.State_Empty;
+        }
+
+
       });
     }else{
       setState(() {
