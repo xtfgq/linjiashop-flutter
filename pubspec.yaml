@@ -32,9 +32,9 @@ dependencies:
   cached_network_image: ^0.8.0
   flutter_easyrefresh: ^1.2.7
   flutter_html: ^0.11.0
-  flutter_widget_from_html_core: ^0.2.4+3
-
-
+  fluttertoast: ^3.0.4
+  shared_preferences: ^0.5.4+5
+  event_bus: ^1.1.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
