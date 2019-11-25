@@ -5,6 +5,7 @@ import 'package:flutter_app/page/details/product_details.dart';
 import 'package:flutter_app/page/details/store_details.dart';
 import 'package:flutter_app/page/index_page.dart';
 import 'package:flutter_app/page/login_page.dart';
+import 'package:flutter_app/page/reg_and_login.dart';
 import 'package:flutter_app/page/registered_page.dart';
 import 'package:flutter_app/page/secondary/card_voucher.dart';
 import 'package:flutter_app/page/secondary/edit_profile.dart';
@@ -91,7 +92,7 @@ class Routes {
         NEW_SHOP, handler: Handler(handlerFunc: (context, params) => NewShop()));
 
     router.define(
-    '$ORDER_DETAILS/:id', handler: Handler(handlerFunc: (context, params) => OrderDetails(int.parse(params['id'][0]))));
+        '$ORDER_DETAILS/:id', handler: Handler(handlerFunc: (context, params) => OrderDetails(int.parse(params['id'][0]))));
 
     router.define(
         PRODUCT_DETAILS, handler:
@@ -135,7 +136,7 @@ class Routes {
 
 
     router.define(
-        login_page, handler: Handler(handlerFunc: (context, params) => Login()));
+        login_page, handler: Handler(handlerFunc: (context, params) => RegPageAndLoginPage()));
 
     router.define(
         registered_page, handler: Handler(handlerFunc: (context, params) => Registered()));
@@ -160,7 +161,7 @@ class Routes {
         index++;
       }
     }
-    print('我是navigateTo传递的参数：$query');
+//    print('我是navigateTo传递的参数：$query');
     path = path + query;
     return router.navigateTo(context, path, transition: TransitionType.inFromRight);
   }

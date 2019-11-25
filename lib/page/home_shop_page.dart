@@ -180,7 +180,6 @@ class _FindingTabViewState extends State<FindingTabView> with AutomaticKeepAlive
     if(entity?.goods != null){
       setState(() {
         goodsList.clear();
-
         goodsList = entity.goods;
         _isLoading = false;
         if(goodsList.length>0){

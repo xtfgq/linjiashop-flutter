@@ -1,5 +1,6 @@
 
 import 'package:flutter_app/models/details_entity.dart';
+import 'package:flutter_app/models/login_entity.dart';
 import 'package:flutter_app/models/store_entity.dart';
 
 import 'category_entity.dart';
@@ -17,6 +18,8 @@ class EntityFactory {
       return CategoryEntity.fromJson(json) as T;
     }else if (T.toString() == "DetailsEntity"){
       return DetailsEntity.fromJson(json) as T;
+    }else if (T.toString() == "LoginEntity"){
+      return LoginEntity.fromJson(json) as T;
     }
     else {
       return null;

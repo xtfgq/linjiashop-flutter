@@ -13,7 +13,6 @@ class SwiperDiy extends StatelessWidget{
   SwiperDiy({Key key,this.swiperDataList,this.height,this.width}):super(key:key);
   @override
   Widget build(BuildContext context) {
-
     return Container(
       height: height,
       width: width,

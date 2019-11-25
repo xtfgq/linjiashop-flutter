@@ -4,6 +4,7 @@ import 'package:flutter_app/dao/details_dao.dart';
 import 'package:flutter_app/models/details_entity.dart';
 import 'package:flutter_app/page/details_top_area.dart';
 import 'package:flutter_app/page/load_state_layout.dart';
+import 'package:flutter_app/routes/routes.dart';
 import 'package:flutter_app/utils/app_size.dart';
 import 'package:flutter_app/view/app_topbar.dart';
 import 'package:flutter_app/view/customize_appbar.dart';
@@ -49,7 +50,6 @@ class _ProductDetailsState extends State<ProductDetails>  {
     }
   }
   List<String> urls=List();
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -68,7 +68,6 @@ class _ProductDetailsState extends State<ProductDetails>  {
           successWidget:_getContent()
       )
     );
-
 
   }
   ///返回不同头部
@@ -107,7 +106,6 @@ class _ProductDetailsState extends State<ProductDetails>  {
   /**
    * 底部详情
    */
-
   Widget detailBottom() {
     return Container(
       width:AppSize.width(1500),
@@ -156,8 +154,7 @@ class _ProductDetailsState extends State<ProductDetails>  {
 
           InkWell(
             onTap: ()async {
-
-
+              Routes.instance.navigateToParams(context,Routes.login_page);
             },
             child: Container(
               alignment: Alignment.center,
@@ -172,7 +169,7 @@ class _ProductDetailsState extends State<ProductDetails>  {
           ),
           InkWell(
             onTap: ()async{
-
+              Routes.instance.navigateToParams(context,Routes.login_page);
             },
             child: Container(
               alignment: Alignment.center,

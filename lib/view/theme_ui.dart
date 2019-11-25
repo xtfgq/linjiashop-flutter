@@ -32,6 +32,7 @@ class ThemeColor{
   static const Color hintTextColor = const Color(0xff333333);
   static const Color subTextColor = const Color(0xff999999);
   static const Color starColor = const Color(0xFFFFA516);
+  static const Color loignColor = const Color(0xFFFE976A);
 }
 
 class ThemeTextStyle{
