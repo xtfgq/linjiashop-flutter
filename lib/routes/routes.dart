@@ -4,9 +4,7 @@ import 'package:flutter_app/page/details/order_details.dart';
 import 'package:flutter_app/page/details/product_details.dart';
 import 'package:flutter_app/page/details/store_details.dart';
 import 'package:flutter_app/page/index_page.dart';
-import 'package:flutter_app/page/login_page.dart';
 import 'package:flutter_app/page/reg_and_login.dart';
-import 'package:flutter_app/page/registered_page.dart';
 import 'package:flutter_app/page/secondary/card_voucher.dart';
 import 'package:flutter_app/page/secondary/edit_profile.dart';
 import 'package:flutter_app/page/secondary/famous_brand.dart';
@@ -130,16 +128,10 @@ class Routes {
 
     router.define(
         income_record, handler: Handler(handlerFunc: (context, params) => IncomeRecordPage()));
-
     router.define(
         shop_reward, handler: Handler(handlerFunc: (context, params) => ShopRewardPage()));
-
-
     router.define(
         login_page, handler: Handler(handlerFunc: (context, params) => RegPageAndLoginPage()));
-
-    router.define(
-        registered_page, handler: Handler(handlerFunc: (context, params) => Registered()));
 
   }
 

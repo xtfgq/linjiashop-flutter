@@ -4,55 +4,45 @@ import 'package:flutter_app/utils/app_size.dart';
 
 import 'flutter_iconfont.dart';
 
-class HomeTopBar extends StatelessWidget {
+class SearchBar extends StatelessWidget {
+  final TextEditingController controller;
+  final VoidCallback onEditingComplete;
+  final FocusNode focusNode;
+  SearchBar({
+    @required this.focusNode,
+    @required this.controller,
+    @required this.onEditingComplete
+  });
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+    return Stack(
       children: <Widget>[
-        SizedBox(
-          width: 48,
-          child: Column(mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Icon(
-                  IconFonts.scan_code,
-                  color: Colors.white,
-                  size: AppSize.width(48),
-                ),
-                Text("扫一扫", style: TextStyle(fontSize: AppSize.sp(28), color: Colors.white))
-              ]),
-        ),
-        Expanded(
-            child: Container(
-              height: AppSize.height(72),
-              decoration: BoxDecoration(
-                  color: Colors.white, borderRadius: BorderRadius.circular(20.0)),
-              child: Center(
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      Icon(
-                        CupertinoIcons.search,
-                        color: Color(0xff999999),
-                        size: AppSize.width(40),
-                      ),
-                      Text("请输入商品名称",
-                          style: TextStyle(fontSize:AppSize.sp(35), color: Color(0xff999999)))
-                    ],
-                  )),
-            )),
-        SizedBox(
-          width: 48,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Icon(IconFonts.location, color: Colors.white, size: AppSize.width(56)),
-              Text("黑龙江", style: TextStyle(fontSize: AppSize.sp(28), color: Colors.white))
-            ],
-          ),
-        )
+        Center(
+            child: InkWell(
+
+                child: Container(
+                  width: AppSize.width(750),
+                  height: AppSize.height(72),
+                  decoration: BoxDecoration(
+                      color: Colors.white, borderRadius: BorderRadius.circular(20.0)),
+                  child:TextField(
+                    keyboardType: TextInputType.text,
+                    textInputAction: TextInputAction.done,
+                    maxLines: 1,
+                    decoration: InputDecoration(
+                        hintText: '请输入商品名称',
+                        contentPadding: EdgeInsets.symmetric(
+                            vertical: AppSize.height(25)),
+                        border: InputBorder.none,
+                        prefixIcon: Icon(Icons.search),
+                        hintStyle: TextStyle(fontSize:AppSize.sp(35), color: Color(0xff999999))
+                    ),
+                    focusNode: focusNode,
+                    controller: controller,
+
+                  ),
+                ))),
+
       ],
     );
   }

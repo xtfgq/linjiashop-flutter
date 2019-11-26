@@ -1,13 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/page/findings_page.dart';
-
 import 'package:flutter_app/page/orderform_page.dart';
 import 'package:flutter_app/page/personal_page.dart';
+import 'package:flutter_app/page/search_page.dart';
 import 'package:flutter_app/utils/app_size.dart';
 import 'package:flutter_app/utils/constants.dart';
-import 'package:flutter_app/view/my_icons.dart.dart';
-
 import 'home_shop_page.dart';
 
 class IndexPage extends StatefulWidget {
@@ -24,7 +21,7 @@ final List<BottomNavigationBarItem> bottomBar = <BottomNavigationBarItem>[
 
 final List<Widget> pages = <Widget>[
   FindingsShopPage(),
-  FindingsPage(),
+  SearchPage(),
   OrderFormPage(),
   PersonalPage()
 ];
@@ -58,10 +55,7 @@ class _IndexPageState extends State<IndexPage>  with AutomaticKeepAliveClientMix
       body: _getPageBody(context),
     );
   }
-
-
   final pageController = PageController();
-
   _getPageBody(BuildContext context){
     return PageView(
       controller: pageController,
@@ -69,7 +63,6 @@ class _IndexPageState extends State<IndexPage>  with AutomaticKeepAliveClientMix
       physics: NeverScrollableScrollPhysics(), // 禁止滑动
     );
   }
-
   @override
   // TODO: implement wantKeepAlive
   bool get wantKeepAlive => true;
