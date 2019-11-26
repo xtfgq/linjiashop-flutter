@@ -1,14 +1,13 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/dao/hot_goods_dao.dart';
+import 'package:flutter_app/dao/search_dao.dart';
 import 'package:flutter_app/models/hot_entity.dart';
 import 'package:flutter_app/utils/dialog_utils.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_app/view/customize_appbar.dart';
 import 'package:flutter_easyrefresh/material_footer.dart';
 import 'package:flutter_easyrefresh/material_header.dart';
-
 import '../models/goods_entity.dart';
 import '../utils/app_size.dart';
 import '../view/app_topbar.dart';
@@ -32,7 +31,14 @@ class _SearchPageState extends State<SearchPage>  with AutomaticKeepAliveClientM
     return Scaffold(
         appBar: MyAppBar(
           preferredSize: Size.fromHeight(AppSize.height(160)),
-          child: SearchBar(focusNode: _focusNode,controller:_controller, onEditingComplete: () => _checkInput()),
+          child: SearchBar(focusNode: _focusNode,controller:_controller,  onChangedCallback: () {
+            var key = _controller.text;
+            if (key.isEmpty) {
+              loadData();
+            }else {
+              _doSearch(key.toString());
+            }
+          }),
 
         ),
         body:
@@ -42,7 +48,14 @@ class _SearchPageState extends State<SearchPage>  with AutomaticKeepAliveClientM
               setState(() {
                 _layoutState = LoadState.State_Loading;
               });
-              loadData();
+              _isLoading=true;
+              var key = _controller.text;
+              if (key.isEmpty) {
+                loadData();
+              }else {
+                _doSearch(key.toString());
+              }
+
             }, //错误按钮点击过后进行重新加载
             successWidget:_getContent()
         )
@@ -52,22 +65,33 @@ class _SearchPageState extends State<SearchPage>  with AutomaticKeepAliveClientM
   GlobalKey<RefreshFooterState> _footerKey = GlobalKey<RefreshFooterState>();
 
   bool _isLoading = false;
-  void _checkInput() {
-    var username = _controller.text;
-    if (username.isEmpty) {
-      FocusScope.of(context).requestFocus(_focusNode);
-      DialogUtil.buildToast('请输入搜索内容');
-      return;
-    }
 
-  }
   @override
   void initState() {
     _isLoading = true;
     loadData();
     super.initState();
   }
-
+  void _doSearch(String key) async{
+    _isLoading = true;
+    HotEntity entity = await SearchDao.fetch(key);
+    if(entity?.goods != null){
+      setState(() {
+        goodsList.clear();
+        goodsList = entity.goods;
+        _isLoading = false;
+        if (goodsList.length > 0) {
+          _layoutState = LoadState.State_Success;
+        } else {
+          _layoutState = LoadState.State_Empty;
+        }
+      });
+    }else{
+      setState(() {
+        _layoutState = LoadState.State_Error;
+      });
+    }
+  }
 
   /**
    * 加载热门商品
@@ -119,7 +143,12 @@ class _SearchPageState extends State<SearchPage>  with AutomaticKeepAliveClientM
             ),
             onRefresh: () async {
               _isLoading = true;
-              loadData();
+              var username = _controller.text;
+              if (username.isEmpty) {
+                loadData();
+              }else {
+                _doSearch(username.toString());
+              }
 
             },
             loadMore: () async {}

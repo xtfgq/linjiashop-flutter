@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_app/utils/app_size.dart';
 
+import '../functions.dart';
 import 'flutter_iconfont.dart';
 
 class SearchBar extends StatelessWidget {
   final TextEditingController controller;
-  final VoidCallback onEditingComplete;
+
+  final OnChangedCallback onChangedCallback;
   final FocusNode focusNode;
   SearchBar({
     @required this.focusNode,
     @required this.controller,
-    @required this.onEditingComplete
+    @required this.onChangedCallback
   });
   @override
   Widget build(BuildContext context) {
@@ -37,6 +40,14 @@ class SearchBar extends StatelessWidget {
                         prefixIcon: Icon(Icons.search),
                         hintStyle: TextStyle(fontSize:AppSize.sp(35), color: Color(0xff999999))
                     ),
+                    inputFormatters: [
+                      LengthLimitingTextInputFormatter(10),
+                    ],
+                    onChanged: (str) {
+                      if (null != onChangedCallback) {
+                        onChangedCallback();
+                      }
+                    },
                     focusNode: focusNode,
                     controller: controller,
 
