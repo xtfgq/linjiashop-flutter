@@ -2,7 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/models/order_form_entity.dart';
 import 'package:flutter_app/res/colours.dart';
-import 'package:flutter_app/res/dimens.dart';
+
 import 'package:flutter_app/utils/app_size.dart';
 import 'package:flutter_app/view/theme_ui.dart';
 
