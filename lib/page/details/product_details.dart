@@ -1,14 +1,21 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/dao/add_goods_cart_dao.dart';
+import 'package:flutter_app/dao/cart_query_dao.dart';
 import 'package:flutter_app/dao/details_dao.dart';
+import 'package:flutter_app/models/cart_entity.dart';
+import 'package:flutter_app/models/cart_goods_query_entity.dart';
 import 'package:flutter_app/models/details_entity.dart';
 import 'package:flutter_app/page/details_top_area.dart';
 import 'package:flutter_app/page/load_state_layout.dart';
+import 'package:flutter_app/receiver/event_bus.dart';
 import 'package:flutter_app/routes/routes.dart';
 import 'package:flutter_app/utils/app_size.dart';
+import 'package:flutter_app/utils/dialog_utils.dart';
 import 'package:flutter_app/view/app_topbar.dart';
 import 'package:flutter_app/view/customize_appbar.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 ///
 /// 商品详情页
 ///
@@ -20,12 +27,15 @@ class ProductDetails extends StatefulWidget {
 }
 
 class _ProductDetailsState extends State<ProductDetails>  {
+  int num = 0;
   LoadState _loadStateDetails=LoadState.State_Loading;
   GoodsModelDetail goodsModel;
+  String token;
 
   @override
   void initState() {
     loadData();
+    _getTokenInfo();
     super.initState();
   }
 
@@ -49,9 +59,17 @@ class _ProductDetailsState extends State<ProductDetails>  {
       });
     }
   }
+  _getTokenInfo() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    token = prefs.getString("token");
+    if(null!=token){
+      loadCartData(token);
+    }
+  }
   List<String> urls=List();
   @override
   Widget build(BuildContext context) {
+    _listen();
     return Scaffold(
         appBar: MyAppBar(
           preferredSize: Size.fromHeight(AppSize.height(160)),
@@ -130,6 +148,7 @@ class _ProductDetailsState extends State<ProductDetails>  {
                   ),
                 ) ,
               ),
+           num==0?Container():
            Positioned(
                     top:0,
                     right: 10,
@@ -140,8 +159,9 @@ class _ProductDetailsState extends State<ProductDetails>  {
                           border:Border.all(width: 2,color: Colors.white),
                           borderRadius: BorderRadius.circular(12.0)
                       ),
-                      child: Text(
-                        '123',
+                      child:
+                     Text(
+                   num.toString(),
                         style: TextStyle(
                             color: Colors.white,
                             fontSize: AppSize.sp(22)
@@ -154,7 +174,11 @@ class _ProductDetailsState extends State<ProductDetails>  {
 
           InkWell(
             onTap: ()async {
-              Routes.instance.navigateToParams(context,Routes.login_page);
+              if(token==null) {
+                Routes.instance.navigateToParams(context, Routes.login_page);
+              }else{
+                addCart(widget.id, 1, token);
+              }
             },
             child: Container(
               alignment: Alignment.center,
@@ -169,7 +193,11 @@ class _ProductDetailsState extends State<ProductDetails>  {
           ),
           InkWell(
             onTap: ()async{
-              Routes.instance.navigateToParams(context,Routes.login_page);
+              if(token==null) {
+                Routes.instance.navigateToParams(context, Routes.login_page);
+              }else{
+                DialogUtil.buildToast("正在结算~");
+              }
             },
             child: Container(
               alignment: Alignment.center,
@@ -186,4 +214,45 @@ class _ProductDetailsState extends State<ProductDetails>  {
       ),
     );
   }
+  void addCart(String idGoods,int count,String token) async{
+    CartEntity entity = await AddDao.fetch(idGoods,count,token);
+    if(entity?.cartModel != null){
+      if(entity.cartModel.code==20000){
+        setState(() {
+          num++;
+        });
+      }
+      DialogUtil.buildToast(entity.cartModel.msg);
+    }else{
+      DialogUtil.buildToast("服务器错误~");
+    }
+
+  }
+  ///监听Bus events
+  void _listen() {
+    eventBus.on<UserLoggedInEvent>().listen((event) {
+      _getTokenInfo();
+    });
+  }
+
+  void loadCartData(String token)async{
+    CartGoodsQueryEntity entity = await CartQueryDao.fetch(token);
+    if(entity?.goods != null){
+      int numTmp=0;
+      if(entity.goods.length>0){
+        entity.goods.forEach((el){
+          numTmp = numTmp+el.count;
+        });
+        ///更新总数
+        setState(() {
+         num = numTmp;
+        });
+      }
+
+    }else{
+      DialogUtil.buildToast("服务器错误~");
+
+    }
+  }
+
 }
