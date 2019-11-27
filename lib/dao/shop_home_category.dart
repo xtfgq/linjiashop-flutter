@@ -1,12 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_app/models/category_entity.dart';
 import 'package:flutter_app/models/entity_factory.dart';
-
-import 'findings_dao.dart';
 import 'dart:async';
-
-import 'package:flutter_app/models/goods_entity.dart';
-
 import 'config.dart';
 const CATEGORY_URL = '$SERVER_HOST/category/list';
 class ShopHomeCategoryDao{

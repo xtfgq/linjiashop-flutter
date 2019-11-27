@@ -1,10 +1,16 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_app/page/cart_page.dart';
 import 'package:flutter_app/page/orderform_page.dart';
 import 'package:flutter_app/page/personal_page.dart';
 import 'package:flutter_app/page/search_page.dart';
+import 'package:flutter_app/receiver/event_bus.dart';
+import 'package:flutter_app/routes/routes.dart';
 import 'package:flutter_app/utils/app_size.dart';
 import 'package:flutter_app/utils/constants.dart';
+import 'package:flutter_app/utils/dialog_utils.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'home_shop_page.dart';
 
 class IndexPage extends StatefulWidget {
@@ -20,19 +26,22 @@ final List<BottomNavigationBarItem> bottomBar = <BottomNavigationBarItem>[
 ];
 
 final List<Widget> pages = <Widget>[
-  FindingsShopPage(),
+  HomePage(),
   SearchPage(),
-  OrderFormPage(),
+  CartPage(),
   PersonalPage()
 ];
 
 class _IndexPageState extends State<IndexPage>  with AutomaticKeepAliveClientMixin{
   int currentIndex = 0;
+  DateTime lastPopTime;
+  String token;
 
   @override
   void initState() {
     super.initState();
     print("--*-- _IndexPageState");
+    _getTokenInfo();
   }
 
   @override
@@ -41,19 +50,52 @@ class _IndexPageState extends State<IndexPage>  with AutomaticKeepAliveClientMix
     // 初始化屏幕适配包
     AppSize.init(context);
     Screen.init(context);
-    return Scaffold(
-      bottomNavigationBar: BottomNavigationBar(
-          type: BottomNavigationBarType.fixed,
-          currentIndex: this.currentIndex,
-          onTap: (index) {
-            setState(() {
-              this.currentIndex = index;
-              pageController.jumpToPage(index);
-            });
-          },
-          items: bottomBar),
-      body: _getPageBody(context),
+
+    return WillPopScope(
+      child: Scaffold(
+        bottomNavigationBar: BottomNavigationBar(
+            type: BottomNavigationBarType.fixed,
+            currentIndex: this.currentIndex,
+            onTap: (index) {
+              if(index==2||index==3) {
+                if(token==null){
+                  Routes.instance.navigateTo(context, Routes.login_page);
+                  return;
+                }
+                if (token.isNotEmpty) {
+                  setState(() {
+                    eventBus.fire(new UserLoggedInEvent("sucuss"));
+                    this.currentIndex = index;
+                    pageController.jumpToPage(index);
+                  });
+                }else{
+                  Routes.instance.navigateTo(context, Routes.login_page);
+                }
+              }else{
+                setState(() {
+                  this.currentIndex = index;
+                  pageController.jumpToPage(index);
+                });
+              }
+
+            },
+            items: bottomBar),
+        body: _getPageBody(context),
+      ) ,
+        onWillPop: () async {
+          // 点击返回键的操作
+          if (lastPopTime == null ||
+              DateTime.now().difference(lastPopTime) > Duration(seconds: 2)) {
+            lastPopTime = DateTime.now();
+            DialogUtil.buildToast('再按一次退出');
+          } else {
+            lastPopTime = DateTime.now();
+            // 退出app
+            await SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+          }
+        },
     );
+
   }
   final pageController = PageController();
   _getPageBody(BuildContext context){
@@ -63,7 +105,20 @@ class _IndexPageState extends State<IndexPage>  with AutomaticKeepAliveClientMix
       physics: NeverScrollableScrollPhysics(), // 禁止滑动
     );
   }
+  _getTokenInfo() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    token = prefs.getString("token");
+
+  }
+
   @override
   // TODO: implement wantKeepAlive
   bool get wantKeepAlive => true;
+  clearUser() async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString("avatar","");
+    prefs.setString("token","");
+    prefs.setString("nickName","");
+    prefs.setString("mobile","");
+  }
 }

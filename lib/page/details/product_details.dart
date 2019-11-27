@@ -36,6 +36,7 @@ class _ProductDetailsState extends State<ProductDetails>  {
   void initState() {
     loadData();
     _getTokenInfo();
+    _listen();
     super.initState();
   }
 
@@ -62,14 +63,14 @@ class _ProductDetailsState extends State<ProductDetails>  {
   _getTokenInfo() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     token = prefs.getString("token");
-    if(null!=token){
+    if(null!=token||token.isNotEmpty){
       loadCartData(token);
     }
   }
   List<String> urls=List();
   @override
   Widget build(BuildContext context) {
-    _listen();
+
     return Scaffold(
         appBar: MyAppBar(
           preferredSize: Size.fromHeight(AppSize.height(160)),
@@ -174,11 +175,15 @@ class _ProductDetailsState extends State<ProductDetails>  {
 
           InkWell(
             onTap: ()async {
-              if(token==null) {
-                Routes.instance.navigateToParams(context, Routes.login_page);
-              }else{
-                addCart(widget.id, 1, token);
+              if(token==null){
+                Routes.instance.navigateTo(context, Routes.login_page);
+                return;
               }
+              if(token.isEmpty)  {
+                Routes.instance.navigateTo(context, Routes.login_page);
+                return;
+              }
+              addCart(widget.id, 1, token);
             },
             child: Container(
               alignment: Alignment.center,
@@ -192,12 +197,17 @@ class _ProductDetailsState extends State<ProductDetails>  {
             ) ,
           ),
           InkWell(
-            onTap: ()async{
-              if(token==null) {
-                Routes.instance.navigateToParams(context, Routes.login_page);
-              }else{
-                DialogUtil.buildToast("正在结算~");
+            onTap: (){
+              if(token==null){
+                Routes.instance.navigateTo(context, Routes.login_page);
+                return;
               }
+              if(token.isEmpty)  {
+                Routes.instance.navigateTo(context, Routes.login_page);
+                return;
+              }
+
+
             },
             child: Container(
               alignment: Alignment.center,
@@ -231,7 +241,14 @@ class _ProductDetailsState extends State<ProductDetails>  {
   ///监听Bus events
   void _listen() {
     eventBus.on<UserLoggedInEvent>().listen((event) {
-      _getTokenInfo();
+      if("sucuss"==event.text) {
+        _getTokenInfo();
+      }
+      if("fail"==event.text) {
+        DialogUtil.buildToast("token过期~");
+        clearUser();
+        Routes.instance.navigateTo(context, Routes.login_page);
+      }
     });
   }
 
@@ -251,8 +268,14 @@ class _ProductDetailsState extends State<ProductDetails>  {
 
     }else{
       DialogUtil.buildToast("服务器错误~");
-
     }
+  }
+  clearUser() async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString("avatar","");
+    prefs.setString("token","");
+    prefs.setString("nickName","");
+    prefs.setString("mobile","");
   }
 
 }

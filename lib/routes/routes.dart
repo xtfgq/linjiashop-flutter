@@ -159,9 +159,9 @@ class Routes {
   }
 
 
-  Future navigateTo(BuildContext context, String path,[String param='']){
-    var p = param.isNotEmpty?'$path/$param':path;
-    return router.navigateTo(context,p,transition: TransitionType.inFromRight);
+  Future navigateTo(BuildContext context, String path){
+
+    return router.navigateTo(context,path,transition: TransitionType.inFromRight);
   }
 
   Future navigateFromBottom(BuildContext context, String path,[String param='']){

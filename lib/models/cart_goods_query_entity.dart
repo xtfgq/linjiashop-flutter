@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 class CartGoodsQueryEntity {
 	List<GoodsListModel> goods;
 
@@ -16,19 +18,18 @@ class CartGoodsQueryEntity {
 	}
 
 
+
 }
-class GoodsListModel{
+class GoodsListModel {
 	GoodsModel goodsModel;
 	int count;
 	GoodsListModel({this.goodsModel, this.count});
 	GoodsListModel.fromJson(Map<String, dynamic> json){
 		count = json ['count'];
 		if(json ['goods']!=null){
-			goodsModel=new GoodsModel.fromJson(json ['goods']);
+			goodsModel=new GoodsModel.fromJson(json ['goods'],count);
 		}
-
 	}
-
 }
 
 class GoodsModel {
@@ -64,13 +65,16 @@ class GoodsModel {
 	String pic;
 	 int price;
 	String specifications;
+	///客户端自定义是否选中
+	bool isCheck;
+	int countNum;
 
 
 	GoodsModel({this.createBy, this.createTime, this.descript, this.detail,
 		this.idCategory,this.isDelete,this.isOnSale,this.modifyBy,this.modifyTime,
 		this.name,this.num,this.pic,this.price,this.specifications,this.id});
 
-	GoodsModel.fromJson(Map<String, dynamic> json) {
+	GoodsModel.fromJson(Map<String, dynamic> json,int count) {
 		createBy = json['createBy'];
 		createTime = json['createTime'];
 		descript = json['descript'];
@@ -86,6 +90,8 @@ class GoodsModel {
 		price = json['price'];
 		specifications = json['specifications'];
 		id=json['id'];
+		countNum=count;
+    isCheck = true;
 	}
 
 

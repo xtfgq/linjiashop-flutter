@@ -6,6 +6,7 @@ import 'package:flutter_app/page/reset_pwd_page.dart';
 import 'package:flutter_app/receiver/event_bus.dart';
 import 'package:flutter_app/utils/app_size.dart';
 import 'package:flutter_app/utils/constants.dart';
+import 'package:flutter_app/utils/dialog_utils.dart';
 import 'package:flutter_app/view/app_topbar.dart';
 
 import 'package:flutter_app/view/customize_appbar.dart';
@@ -13,6 +14,8 @@ import 'package:flutter_app/view/flutter_iconfont.dart';
 import 'package:flutter_app/view/theme_ui.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../common.dart';
 class RegPageAndLoginPage extends StatefulWidget {
   @override
   _RegAndLoginState createState() => _RegAndLoginState();
@@ -223,16 +226,10 @@ class _RegAndLoginState extends State<RegPageAndLoginPage> {
     LoginEntity entity = await LoginDao.fetch(userName,password);
     if(entity?.userModel != null){
       saveUserInfo(entity.userModel);
-
-      Fluttertoast.showToast(
-          fontSize: AppSize.sp(13),
-          gravity: ToastGravity.CENTER,
-          msg: "登录成功~");
+      DialogUtil.buildToast('登录成功~');
     }else{
-      Fluttertoast.showToast(
-          fontSize: AppSize.sp(13),
-          gravity: ToastGravity.CENTER,
-          msg: entity.msgModel.msg);
+      DialogUtil.buildToast(entity.msgModel.msg);
+
     }
 
   }
@@ -264,6 +261,7 @@ class _RegAndLoginState extends State<RegPageAndLoginPage> {
     prefs.setString("nickName",userModel.nickName);
     prefs.setString("mobile",userModel.mobile);
     eventBus.fire(new UserLoggedInEvent("sucuss"));
+    AppConfig.isUser=false;
     Navigator.pop(context);
   }
 

@@ -20,12 +20,12 @@ import 'card_goods.dart';
  * app 首页
  */
 
-class FindingsShopPage extends StatefulWidget {
+class HomePage extends StatefulWidget {
   @override
-  _FindingsShopPageState createState() => _FindingsShopPageState();
+  _HomePageState createState() => _HomePageState();
 }
 
-class _FindingsShopPageState extends State<FindingsShopPage>
+class _HomePageState extends State<HomePage>
     with AutomaticKeepAliveClientMixin, SingleTickerProviderStateMixin {
   List<Tab> myTabs = <Tab>[];
   List<FindingTabView> bodys = [];

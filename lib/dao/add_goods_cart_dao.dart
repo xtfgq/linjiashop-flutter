@@ -1,9 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_app/models/cart_entity.dart';
 import 'package:flutter_app/models/entity_factory.dart';
-import 'package:flutter_app/models/login_entity.dart';
 import 'dart:async';
-import 'package:flutter_app/models/store_entity.dart';
 import 'config.dart';
 const ADD_URL = '$SERVER_HOST/user/cart/add';
 

@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-
 import 'package:flutter_app/utils/app_size.dart';
 import 'package:flutter_app/utils/constants.dart';
-import 'package:flutter_app/view/arc_bg.dart';
 import 'package:flutter_app/view/custom_view.dart';
 import 'package:flutter_app/view/theme_ui.dart';
 import '../view/theme_ui.dart';
@@ -60,7 +58,7 @@ class _PersonalPageState extends State<PersonalPage>
         height: AppSize.height(900),
         child: Stack(
           children: <Widget>[
-            ArcBackground(screenWidth, AppSize.height(500)),
+//            ArcBackground(screenWidth, AppSize.height(500)),
             Container(
               margin: EdgeInsets.only(
                   top: AppSize.height(183),

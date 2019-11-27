@@ -15,3 +15,9 @@ class UserNumInEvent{
     this.num=text;
   }
 }
+class GoodsNumInEvent{
+  String  event;
+  GoodsNumInEvent(String text){
+    this.event=text;
+  }
+}
