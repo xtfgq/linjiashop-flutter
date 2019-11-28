@@ -66,6 +66,7 @@ class _CartPageState extends State<CartPage>
       );
     }else{
       return Stack(
+
         children: <Widget>[
             ListView.builder(
             itemCount: goodsModels.length,
@@ -129,8 +130,8 @@ class _CartPageState extends State<CartPage>
   ///监听Bus events
   void _listen() {
     eventBus.on<UserLoggedInEvent>().listen((event) {
-      if("sucuss"==event.text&&!AppConfig.isUser) {
-        AppConfig.isUser=true;
+      if("sucuss"==event.text) {
+        AppConfig.isUser=false;
         _getTokenInfo();
 
       }
@@ -138,11 +139,15 @@ class _CartPageState extends State<CartPage>
         AppConfig.isUser=true;
         DialogUtil.buildToast("token过期~");
         setState(() {
+          goodsModels.clear();
           _layoutState = LoadState.State_Error;
         });
         Routes.instance.navigateTo(context, Routes.login_page);
         clearUser();
       }
+    });
+    eventBus.on<IndexInEvent>().listen((event) {
+      loadCartData(token);
     });
     eventBus.on<GoodsNumInEvent>().listen((event) {
       if('clear'==event.event){

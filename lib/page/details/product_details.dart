@@ -259,9 +259,11 @@ class _ProductDetailsState extends State<ProductDetails>  {
   void _listen() {
     eventBus.on<UserLoggedInEvent>().listen((event) {
       if("sucuss"==event.text) {
+        AppConfig.isUser=false;
         _getTokenInfo();
       }
-      if("fail"==event.text) {
+      if("fail"==event.text&& !AppConfig.isUser) {
+        AppConfig.isUser=true;
         DialogUtil.buildToast("token过期~");
         clearUser();
         Routes.instance.navigateTo(context, Routes.login_page);
