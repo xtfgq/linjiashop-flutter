@@ -1,12 +1,18 @@
 
 import 'package:flutter/material.dart';
+import 'package:flutter_app/dao/add_goods_cart_dao.dart';
+import 'package:flutter_app/dao/del_goods_dao.dart';
+import 'package:flutter_app/models/cart_entity.dart';
 import 'package:flutter_app/models/cart_goods_query_entity.dart';
+import 'package:flutter_app/models/msg_entity.dart';
 import 'package:flutter_app/receiver/event_bus.dart';
 import 'package:flutter_app/utils/app_size.dart';
+import 'package:flutter_app/utils/dialog_utils.dart';
 
 class CartCount extends StatelessWidget {
   GoodsModel item;
-  CartCount(this.item);
+  String token;
+  CartCount(this.item,this.token);
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -30,8 +36,7 @@ class CartCount extends StatelessWidget {
   Widget _reduceBtn(context){
     return InkWell(
       onTap: (){
-        item.countNum--;
-        eventBus.fire(new GoodsNumInEvent("sub"));
+        loadReduce(item.orderId,item.countNum-1,token);
       },
       child: Container(
         width:AppSize.width(55),
@@ -47,13 +52,26 @@ class CartCount extends StatelessWidget {
       ),
     );
   }
+  void loadReduce(String orderId,int count,String token) async{
+
+    MsgEntity entity = await DelDao.fetch(orderId,count,token);
+    if(entity?.msgModel != null){
+      if(entity.msgModel.code==20000){
+        item.countNum--;
+        eventBus.fire(new GoodsNumInEvent("sub"));
+      }
+      DialogUtil.buildToast(entity.msgModel.msg);
+    }else{
+      DialogUtil.buildToast("服务器错误~");
+    }
+
+  }
 
   //添加按钮
   Widget _addBtn(context){
     return InkWell(
       onTap: (){
-        item.countNum++;
-        eventBus.fire(new GoodsNumInEvent("add"));
+        addCart(item.id,1,token);
       },
       child: Container(
         width:AppSize.width(55),
@@ -69,6 +87,19 @@ class CartCount extends StatelessWidget {
         child: Text('+'),
       ),
     );
+  }
+  void addCart(String idGoods,int count,String token) async{
+    CartEntity entity = await AddDao.fetch(idGoods,count,token);
+    if(entity?.cartModel != null){
+      if(entity.cartModel.code==20000){
+        item.countNum++;
+        eventBus.fire(new GoodsNumInEvent("add"));
+      }
+      DialogUtil.buildToast(entity.cartModel.msg);
+    }else{
+      DialogUtil.buildToast("服务器错误~");
+    }
+
   }
 
   //中间数量显示区域

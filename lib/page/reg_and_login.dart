@@ -65,7 +65,7 @@ class _RegAndLoginState extends State<RegPageAndLoginPage> {
                       keyboardType: TextInputType.phone,
                       controller: _phoneNum,
                       maxLines: 1,
-                      maxLength: 30,
+                      maxLength: 11,
                       decoration: InputDecoration(
                           prefixIcon: Icon(Icons.phone_iphone),
                           hintText: "请输入手机号",
@@ -249,16 +249,9 @@ class _RegAndLoginState extends State<RegPageAndLoginPage> {
     LoginEntity entity = await LoginRegDao.fetch(userName,smsCode);
     if(entity?.userModel != null){
       saveUserInfo(entity.userModel);
-
-      Fluttertoast.showToast(
-          fontSize: AppSize.sp(13),
-          gravity: ToastGravity.CENTER,
-          msg: "登录成功~");
+      DialogUtil.buildToast("登录成功~");
     }else{
-      Fluttertoast.showToast(
-          fontSize: AppSize.sp(13),
-          gravity: ToastGravity.CENTER,
-          msg: entity.msgModel.msg);
+      DialogUtil.buildToast(entity.msgModel.msg);
     }
 
   }

@@ -2,6 +2,7 @@
 import 'package:flutter_app/models/cart_entity.dart';
 import 'package:flutter_app/models/details_entity.dart';
 import 'package:flutter_app/models/login_entity.dart';
+import 'package:flutter_app/models/msg_entity.dart';
 import 'package:flutter_app/models/store_entity.dart';
 
 import 'cart_goods_query_entity.dart';
@@ -29,6 +30,8 @@ class EntityFactory {
       return CartEntity.fromJson(json) as T;
     }else if (T.toString() == "CartGoodsQueryEntity"){
       return CartGoodsQueryEntity.fromJson(json) as T;
+    }else if (T.toString() == "MsgEntity"){
+      return MsgEntity.fromJson(json) as T;
     }
     else {
       return null;

@@ -23,11 +23,15 @@ class CartGoodsQueryEntity {
 class GoodsListModel {
 	GoodsModel goodsModel;
 	int count;
-	GoodsListModel({this.goodsModel, this.count});
+	String orderId;
+	String idGoods;
+	GoodsListModel({this.goodsModel, this.count,this.orderId,this.idGoods});
 	GoodsListModel.fromJson(Map<String, dynamic> json){
 		count = json ['count'];
+		orderId = json ['id'];
+		idGoods =json ['idGoods'];
 		if(json ['goods']!=null){
-			goodsModel=new GoodsModel.fromJson(json ['goods'],count);
+			goodsModel=new GoodsModel.fromJson(json ['goods'],count,orderId,idGoods);
 		}
 	}
 }
@@ -68,13 +72,15 @@ class GoodsModel {
 	///客户端自定义是否选中
 	bool isCheck;
 	int countNum;
+	String orderId;
+	String idGoods;
 
 
 	GoodsModel({this.createBy, this.createTime, this.descript, this.detail,
 		this.idCategory,this.isDelete,this.isOnSale,this.modifyBy,this.modifyTime,
 		this.name,this.num,this.pic,this.price,this.specifications,this.id});
 
-	GoodsModel.fromJson(Map<String, dynamic> json,int count) {
+	GoodsModel.fromJson(Map<String, dynamic> json,int count,String orderId,String idGoods) {
 		createBy = json['createBy'];
 		createTime = json['createTime'];
 		descript = json['descript'];
@@ -90,7 +96,9 @@ class GoodsModel {
 		price = json['price'];
 		specifications = json['specifications'];
 		id=json['id'];
+		this.orderId= orderId;
 		countNum=count;
+		this.idGoods=idGoods;
     isCheck = true;
 	}
 

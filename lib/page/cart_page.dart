@@ -70,7 +70,7 @@ class _CartPageState extends State<CartPage>
             ListView.builder(
             itemCount: goodsModels.length,
               itemBuilder: (context,index){
-                return CartItem(goodsModels[index]);
+                return CartItem(goodsModels[index],token,goodsModels,index);
               },
             ),
                 Positioned(
@@ -145,6 +145,10 @@ class _CartPageState extends State<CartPage>
       }
     });
     eventBus.on<GoodsNumInEvent>().listen((event) {
+      if('clear'==event.event){
+        loadCartData(token);
+        return;
+      }
       if('All'==event.event){
         _isAllCheck = goodsModels[0].isCheck;
 

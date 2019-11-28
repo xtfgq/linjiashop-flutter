@@ -1,40 +1,97 @@
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/dao/clear_goods_dao.dart';
 import 'package:flutter_app/models/cart_goods_query_entity.dart';
+import 'package:flutter_app/models/msg_entity.dart';
 import 'package:flutter_app/page/count_item.dart';
 import 'package:flutter_app/receiver/event_bus.dart';
 import 'package:flutter_app/utils/app_size.dart';
+import 'package:flutter_app/utils/dialog_utils.dart';
 import 'package:flutter_app/view/theme_ui.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 
 class CartItem extends StatelessWidget {
   final GoodsModel model;
+  final String token;
+  final  List<GoodsModel> goodsModels;
+  final  int index;
 
-  CartItem(this.model);
+  CartItem(this.model,this.token,this.goodsModels,this.index);
   String imgUrl = "http://linjiashop-mobile-api.microapp.store/file/getImgStream?idFile=";
   @override
   Widget build(BuildContext context) {
 //    print(item);
-   return Container(
-      height: AppSize.height(350),
-      margin: EdgeInsets.fromLTRB(5.0,2.0,5.0,2.0),
-      padding: EdgeInsets.fromLTRB(5.0,10.0,5.0,10.0),
-      decoration: BoxDecoration(
-          color: Colors.white,
-          border: Border(
-              bottom: BorderSide(width:1,color:Colors.black12)
-          )
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          _cartCheckBt(context,model),
-          _cartImage(model),
-          _cartGoodsName(model),
-        ],
-      ),
-    );
+   return Slidable(
+     actionPane: SlidableDrawerActionPane(),
+     actionExtentRatio: 0.25,
+     child:Container(
+       height: AppSize.height(350),
+       margin: EdgeInsets.fromLTRB(5.0,2.0,5.0,2.0),
+       padding: EdgeInsets.fromLTRB(5.0,10.0,5.0,10.0),
+       decoration: BoxDecoration(
+           color: Colors.white,
+           border: Border(
+               bottom: BorderSide(width:1,color:Colors.black12)
+           )
+       ),
+       child: Row(
+         crossAxisAlignment: CrossAxisAlignment.start,
+         children: <Widget>[
+           _cartCheckBt(context,model),
+           _cartImage(model),
+           _cartGoodsName(model,token),
+         ],
+       ),
+     ) ,
+       secondaryActions: <Widget>[
+         IconSlideAction(
+           caption: '移除',
+           color: Colors.red,
+           icon: Icons.delete,
+           closeOnTap: false,
+           onTap: (){
+             return showDialog<bool>(
+                 context: context,
+                 builder: (context) {
+                   return AlertDialog(
+                     title: Text('提示？'),
+                     content: Text('确定删除该条记录？'),
+                     actions: <Widget>[
+                       FlatButton(
+                         child: Text('取消'),
+                         onPressed: () => Navigator.of(context).pop(false),
+                       ),
+                       FlatButton(
+                         child: Text('确定'),
+                         onPressed: () {
+                           loadClearGoods(context,model.orderId,token);
+                            },
+                       ),
+                     ],
+                   );
+                 }
+             );
+             },
+         ),
+       ],
 
+
+   );
+
+  }
+
+  void loadClearGoods(BuildContext context,String orderId,String token) async{
+    MsgEntity entity = await ClearDao.fetch(orderId,token);
+    if(entity?.msgModel != null){
+      if(entity.msgModel.code==20000){
+        Navigator.of(context).pop(true);
+        eventBus.fire(new GoodsNumInEvent("clear"));
+      }
+      DialogUtil.buildToast(entity.msgModel.msg);
+    }else{
+      DialogUtil.buildToast("服务器错误~");
+    }
   }
   //多选按钮
   Widget _cartCheckBt(BuildContext context,GoodsModel item){
@@ -42,7 +99,6 @@ class CartItem extends StatelessWidget {
       child:Container(
         width: AppSize.width(150),
         height: AppSize.height(232),
-
         child:Checkbox(
                 value: item.isCheck,
                 activeColor:Colors.pink,
@@ -70,7 +126,7 @@ class CartItem extends StatelessWidget {
     );
   }
   //商品名称
-  Widget _cartGoodsName(GoodsModel item){
+  Widget _cartGoodsName(GoodsModel item,String token){
     return
       Expanded(
         child: Container(
@@ -87,7 +143,7 @@ class CartItem extends StatelessWidget {
               Text('￥${(item.price/100).toStringAsFixed(2)}',
                   textAlign: TextAlign.left,
                   style: ThemeTextStyle.cardPriceStyle),
-              CartCount(item)
+              CartCount(item,token)
             ],
           ),
         ),
