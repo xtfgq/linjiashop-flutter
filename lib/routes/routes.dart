@@ -56,6 +56,7 @@ class Routes {
   static const shop_reward = '/shop_reward';
 
   static const login_page = '/login_page';
+
   static const registered_page = '/registered_page';
 
   void _config() {
@@ -162,6 +163,25 @@ class Routes {
   Future navigateTo(BuildContext context, String path){
 
     return router.navigateTo(context,path,transition: TransitionType.inFromRight);
+  }
+  Future navigateToReplace(BuildContext context, String path,{Map<String, dynamic> params}){
+    String query =  "";
+    if (params != null) {
+      int index = 0;
+      for (var key in params.keys) {
+        var value = Uri.encodeComponent(params[key]);
+        if (index == 0) {
+          query = "?";
+        } else {
+          query = query + "\&";
+        }
+        query += "$key=$value";
+        index++;
+      }
+    }
+//    print('我是navigateTo传递的参数：$query');
+    path = path + query;
+    return router.navigateTo(context,path,replace: true,transition: TransitionType.inFromRight);
   }
 
   Future navigateFromBottom(BuildContext context, String path,[String param='']){

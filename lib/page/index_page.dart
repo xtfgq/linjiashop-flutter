@@ -14,6 +14,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'home_shop_page.dart';
 
 class IndexPage extends StatefulWidget {
+
   @override
   _IndexPageState createState() => _IndexPageState();
 }
@@ -33,16 +34,17 @@ final List<Widget> pages = <Widget>[
 ];
 
 class _IndexPageState extends State<IndexPage>  with AutomaticKeepAliveClientMixin{
-  int currentIndex = 0;
+
   DateTime lastPopTime;
   String token;
+  int currentIndex=0;
 
   @override
   void initState() {
     super.initState();
-    print("--*-- _IndexPageState");
-    _getTokenInfo();
+//    print("--*-- _IndexPageState");
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -50,13 +52,15 @@ class _IndexPageState extends State<IndexPage>  with AutomaticKeepAliveClientMix
     // 初始化屏幕适配包
     AppSize.init(context);
     Screen.init(context);
-
+    _listen();
     return WillPopScope(
       child: Scaffold(
         bottomNavigationBar: BottomNavigationBar(
             type: BottomNavigationBarType.fixed,
             currentIndex: this.currentIndex,
-            onTap: (index) {
+            onTap: (index) async{
+              SharedPreferences prefs = await SharedPreferences.getInstance();
+              token = prefs.getString("token");
               if(index==2||index==3) {
                 if(token==null){
                   Routes.instance.navigateTo(context, Routes.login_page);
@@ -105,20 +109,15 @@ class _IndexPageState extends State<IndexPage>  with AutomaticKeepAliveClientMix
       physics: NeverScrollableScrollPhysics(), // 禁止滑动
     );
   }
-  _getTokenInfo() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    token = prefs.getString("token");
-
-  }
 
   @override
   // TODO: implement wantKeepAlive
   bool get wantKeepAlive => true;
-  clearUser() async{
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString("avatar","");
-    prefs.setString("token","");
-    prefs.setString("nickName","");
-    prefs.setString("mobile","");
+  void _listen() {
+    eventBus.on<IndexInEvent>().listen((event) {
+      int index = int.parse(event.index);
+      this.currentIndex = index;
+      pageController.jumpToPage(index);
+    });
   }
 }

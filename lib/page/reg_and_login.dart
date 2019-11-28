@@ -30,6 +30,9 @@ class _RegAndLoginState extends State<RegPageAndLoginPage> {
   String _pwd = "";
   String _smsCode = "";
   bool isSendSms=false;
+
+  bool _isObscure = true;
+  IconData _icon = IconFonts.eye_close;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -164,17 +167,26 @@ class _RegAndLoginState extends State<RegPageAndLoginPage> {
         controller: _password,
         maxLines: 1,
         maxLength: 32,
-        obscureText: true,
-        keyboardType: TextInputType.emailAddress,
+        obscureText: _isObscure,
+
         decoration: InputDecoration(
             prefixIcon: Icon(Icons.lock_outline),
             hintText: "请输入登录密码",
             contentPadding: EdgeInsets.symmetric(
                 vertical: AppSize.height(30)),
-            suffixIcon: Icon(
-              IconFonts.eye_close,
-              size: AppSize.width(50),
-            )),
+            suffixIcon: IconButton(
+                icon: Icon(
+                  _icon,
+                  color: Colors.grey,
+                ),
+                onPressed: () {
+                  setState(() {
+                    _isObscure = !_isObscure;
+                    _icon = _isObscure?  IconFonts.eye_close:Icons.remove_red_eye;
+
+                  });
+                }),
+          ),
         onChanged: (inputStr) {
           print("password   " + inputStr);
           _pwd = inputStr;

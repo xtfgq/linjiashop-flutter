@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/common.dart';
 import 'package:flutter_app/dao/add_goods_cart_dao.dart';
 import 'package:flutter_app/dao/cart_query_dao.dart';
 import 'package:flutter_app/dao/details_dao.dart';
@@ -63,7 +64,12 @@ class _ProductDetailsState extends State<ProductDetails>  {
   _getTokenInfo() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     token = prefs.getString("token");
-    if(null!=token||token.isNotEmpty){
+    if(token==null&&!AppConfig.isUser){
+      AppConfig.isUser=true;
+      Routes.instance.navigateTo(context, Routes.login_page);
+      return;
+    }
+    if(token.isNotEmpty){
       loadCartData(token);
     }
   }
@@ -136,8 +142,17 @@ class _ProductDetailsState extends State<ProductDetails>  {
             children: <Widget>[
               InkWell(
                 onTap: (){
-
+                  if(token==null){
+                    Routes.instance.navigateTo(context, Routes.login_page);
+                    return;
+                  }
+                  if(token.isEmpty)  {
+                    Routes.instance.navigateTo(context, Routes.login_page);
+                    return;
+                  }
+                  eventBus.fire(new IndexInEvent("2"));
                   Navigator.pop(context);
+
                 },
                 child: Container(
                   width:AppSize.width(300) ,
@@ -207,6 +222,8 @@ class _ProductDetailsState extends State<ProductDetails>  {
                 return;
               }
 
+              eventBus.fire(new IndexInEvent("2"));
+              Navigator.pop(context);
 
             },
             child: Container(

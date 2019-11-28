@@ -21,3 +21,9 @@ class GoodsNumInEvent{
     this.event=text;
   }
 }
+class IndexInEvent{
+  String  index;
+  IndexInEvent(String text){
+    this.index=text;
+  }
+}

@@ -29,7 +29,6 @@ class _CartPageState extends State<CartPage>
   @override
   void initState() {
     _isLoading=true;
-
     _getTokenInfo();
     super.initState();
   }
@@ -138,6 +137,9 @@ class _CartPageState extends State<CartPage>
       if("fail"==event.text&&!AppConfig.isUser) {
         AppConfig.isUser=true;
         DialogUtil.buildToast("token过期~");
+        setState(() {
+          _layoutState = LoadState.State_Error;
+        });
         Routes.instance.navigateTo(context, Routes.login_page);
         clearUser();
       }

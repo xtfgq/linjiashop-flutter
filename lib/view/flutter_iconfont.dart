@@ -3,11 +3,6 @@ library flutter_iconfont;
 import 'package:flutter/widgets.dart' show IconData;
 import 'package:flutter_app/view/flutter_icon_data.dart';
 
-///
-/// This is an automatically generated code
-///author: arcticfox1919
-///github: https://github.com/arcticfox1919/flutter_iconfont
-///
 class IconFonts{
   IconFonts._();
 

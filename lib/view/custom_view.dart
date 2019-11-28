@@ -151,7 +151,7 @@ class ThemeCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      height: AppSize.height(238),
+      height: AppSize.height(268),
       decoration: ThemeDecoration.card2,
       child:
           Column(
@@ -169,7 +169,6 @@ class ThemeCard extends StatelessWidget {
                               topLeft: Radius.circular(8),
                               topRight: Radius.circular(8)),
                           child:Image(image:CachedNetworkImageProvider(imgUrl),fit: BoxFit.cover,)),
-
                     ),
                     flex: 2,
                   ),
@@ -221,7 +220,6 @@ class ThemeCard extends StatelessWidget {
                 color: Colours.gray_f5,
               )
             ],
-
           )
 
     );
