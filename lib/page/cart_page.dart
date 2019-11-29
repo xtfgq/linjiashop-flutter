@@ -19,8 +19,7 @@ class CartPage extends StatefulWidget {
 
 }
 
-class _CartPageState extends State<CartPage>
-    with AutomaticKeepAliveClientMixin, SingleTickerProviderStateMixin {
+class _CartPageState extends State<CartPage> {
   LoadState _layoutState = LoadState.State_Loading;
   List<GoodsModel> goodsModels= List();
   String token ;
@@ -30,11 +29,12 @@ class _CartPageState extends State<CartPage>
   void initState() {
     _isLoading=true;
     _getTokenInfo();
+    print("--*-- CartPage");
     super.initState();
   }
   @override
   Widget build(BuildContext context) {
-    super.build(context);
+
     _listen();
     return Scaffold(
               appBar: MyAppBar(
@@ -55,9 +55,6 @@ class _CartPageState extends State<CartPage>
     )
     );
   }
-  @override
-  // TODO: implement wantKeepAlive
-  bool get wantKeepAlive => true;
 
   Widget _getContent(BuildContext context) {
     if(_isLoading){
@@ -66,14 +63,12 @@ class _CartPageState extends State<CartPage>
       );
     }else{
       return Stack(
-
         children: <Widget>[
-            ListView.builder(
-            itemCount: goodsModels.length,
-              itemBuilder: (context,index){
-                return CartItem(goodsModels[index],token,goodsModels,index);
-              },
-            ),
+               ListView(
+          children: <Widget>[
+            CartItem(token,goodsModels),
+           ],
+         ),
                 Positioned(
                   bottom:0,
                   left:0,
@@ -100,31 +95,39 @@ class _CartPageState extends State<CartPage>
     loadCartData(token);
   }
   void loadCartData(String token)async{
-    CartGoodsQueryEntity entity = await CartQueryDao.fetch(token);
-    if(entity?.goods != null){
-      if(entity.goods.length > 0){
-        List<GoodsModel> goodsModelsTmp = List();
-        entity.goods.forEach((el){
-          goodsModelsTmp.add(el.goodsModel);
-        });
-        setState(() {
-          _isLoading = false;
-          _layoutState = LoadState.State_Success;
-          goodsModels.clear();
-          goodsModels.addAll(goodsModelsTmp);
 
-        });
+      CartGoodsQueryEntity entity = await CartQueryDao.fetch(token);
+      if(entity?.goods != null){
+        if(entity.goods.length > 0){
+          List<GoodsModel> goodsModelsTmp = List();
+          entity.goods.forEach((el){
+            goodsModelsTmp.add(el.goodsModel);
+          });
+          if(mounted) {
+            setState(() {
+              _isLoading = false;
+              _layoutState = LoadState.State_Success;
+              goodsModels.clear();
+              goodsModels.addAll(goodsModelsTmp);
+            });
+          }
+        }else{
+          if(mounted) {
+            setState(() {
+              _layoutState = LoadState.State_Empty;
+            });
+          }
+
+        }
       }else{
-        setState(() {
-          _layoutState = LoadState.State_Empty;
-        });
-
+        if(mounted) {
+          setState(() {
+            _layoutState = LoadState.State_Error;
+          });
+        }
       }
-    }else{
-      setState(() {
-        _layoutState = LoadState.State_Error;
-      });
-    }
+
+
   }
 
   ///监听Bus events
@@ -137,8 +140,10 @@ class _CartPageState extends State<CartPage>
       }
       if("fail"==event.text&&!AppConfig.isUser) {
         AppConfig.isUser=true;
-        DialogUtil.buildToast("token过期~");
+        DialogUtil.buildToast("请求失败~");
+
         setState(() {
+
           goodsModels.clear();
           _layoutState = LoadState.State_Error;
         });
@@ -146,23 +151,28 @@ class _CartPageState extends State<CartPage>
         clearUser();
       }
     });
-    eventBus.on<IndexInEvent>().listen((event) {
-      loadCartData(token);
-    });
+
     eventBus.on<GoodsNumInEvent>().listen((event) {
-      if('clear'==event.event){
-        loadCartData(token);
-        return;
-      }
-      if('All'==event.event){
-        _isAllCheck = goodsModels[0].isCheck;
+      if(mounted) {
+        if ('clear' == event.event) {
+          setState(() {
+            if (goodsModels.length == 0) {
+              _layoutState = LoadState.State_Empty;
+            }
+          });
+        } else {
+          ///除了删除处理全选，添加操作
+          if ('All' == event.event && goodsModels.length > 0) {
+            _isAllCheck = goodsModels[0].isCheck;
+          } else {
+            _isAllCheck = false;
+          }
+          setState(() {
 
-      }else{
-        _isAllCheck = false;
+          });
+        }
       }
-       setState(() {
 
-       });
     });
   }
   clearUser() async{

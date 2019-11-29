@@ -176,26 +176,29 @@ class _FindingTabViewState extends State<FindingTabView> with AutomaticKeepAlive
   }
 
   void loadData(String id) async{
-    GoodsEntity entity = await FindingsDao.fetch(id);
-    if(entity?.goods != null){
-      setState(() {
-        goodsList.clear();
-        goodsList = entity.goods;
-        _isLoading = false;
-        if(goodsList.length>0){
-          _layoutState = LoadState.State_Success;
-        }else{
-          _layoutState = LoadState.State_Empty;
+
+      GoodsEntity entity = await FindingsDao.fetch(id);
+      if (entity?.goods != null) {
+        if(mounted) {
+          setState(() {
+            goodsList.clear();
+            goodsList = entity.goods;
+            _isLoading = false;
+            if (goodsList.length > 0) {
+              _layoutState = LoadState.State_Success;
+            } else {
+              _layoutState = LoadState.State_Empty;
+            }
+          });
         }
+      } else {
 
-
-      });
-    }else{
-      setState(() {
-        _layoutState = LoadState.State_Error;
-      });
+        setState(() {
+          _layoutState = LoadState.State_Error;
+        });
+      }
     }
-  }
+
 
   _getContent(){
     if(_isLoading){

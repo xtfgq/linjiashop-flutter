@@ -1,6 +1,7 @@
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+
 import 'package:flutter_app/dao/clear_goods_dao.dart';
 import 'package:flutter_app/models/cart_goods_query_entity.dart';
 import 'package:flutter_app/models/msg_entity.dart';
@@ -12,80 +13,100 @@ import 'package:flutter_app/view/theme_ui.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 
 class CartItem extends StatelessWidget {
-  final GoodsModel model;
+
   final String token;
   final  List<GoodsModel> goodsModels;
-  final  int index;
 
-  CartItem(this.model,this.token,this.goodsModels,this.index);
+
+  CartItem(this.token,this.goodsModels);
   String imgUrl = "http://linjiashop-mobile-api.microapp.store/file/getImgStream?idFile=";
   @override
   Widget build(BuildContext context) {
 //    print(item);
-   return Slidable(
-     actionPane: SlidableDrawerActionPane(),
-     actionExtentRatio: 0.25,
-     child:Container(
-       height: AppSize.height(350),
-       margin: EdgeInsets.fromLTRB(5.0,2.0,5.0,2.0),
-       padding: EdgeInsets.fromLTRB(5.0,10.0,5.0,10.0),
-       decoration: BoxDecoration(
-           color: Colors.white,
-           border: Border(
-               bottom: BorderSide(width:1,color:Colors.black12)
-           )
-       ),
-       child: Row(
-         crossAxisAlignment: CrossAxisAlignment.start,
-         children: <Widget>[
-           _cartCheckBt(context,model),
-           _cartImage(model),
-           _cartGoodsName(model,token),
-         ],
-       ),
-     ) ,
-       secondaryActions: <Widget>[
-         IconSlideAction(
-           caption: '移除',
-           color: Colors.red,
-           icon: Icons.delete,
-           closeOnTap: false,
-           onTap: (){
-             return showDialog<bool>(
-                 context: context,
-                 builder: (context) {
-                   return AlertDialog(
-                     title: Text('提示？'),
-                     content: Text('确定删除该条记录？'),
-                     actions: <Widget>[
-                       FlatButton(
-                         child: Text('取消'),
-                         onPressed: () => Navigator.of(context).pop(false),
-                       ),
-                       FlatButton(
-                         child: Text('确定'),
-                         onPressed: () {
-                           loadClearGoods(context,model.orderId,token);
-                            },
-                       ),
-                     ],
-                   );
-                 }
-             );
-             },
-         ),
-       ],
+    return Container(
 
+        margin: EdgeInsets.only(top: 5.0),
+        padding:EdgeInsets.all(3.0),
+        child:  _buildWidget(context)
+    );
+  }
+  Widget _buildWidget(BuildContext context) {
+    List<Widget> mGoodsCard = [];
+    Widget content;
+    for (int i = 0; i < goodsModels.length; i++) {
+      mGoodsCard.add(Slidable(
+        key: Key(i.toString()),
+        actionPane: SlidableDrawerActionPane(),
+        actionExtentRatio: 0.25,
+        child:Container(
 
-   );
-
+          height: AppSize.height(350),
+          margin: EdgeInsets.fromLTRB(5.0,2.0,5.0,2.0),
+          padding: EdgeInsets.fromLTRB(5.0,10.0,5.0,10.0),
+          decoration: BoxDecoration(
+              color: Colors.white,
+              border: Border(
+                  bottom: BorderSide(width:1,color:Colors.black12)
+              )
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              _cartCheckBt(context,goodsModels[i]),
+              _cartImage(goodsModels[i]),
+              _cartGoodsName(goodsModels[i],token),
+            ],
+          ),
+        ) ,
+        secondaryActions: <Widget>[
+          IconSlideAction(
+            caption: '移除',
+            color: Colors.red,
+            icon: Icons.delete,
+            closeOnTap: true,
+            onTap: (){
+              return showDialog<bool>(
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      title: Text('提示？'),
+                      content: Text('确定删除该条记录？'),
+                      actions: <Widget>[
+                        FlatButton(
+                          child: Text('取消'),
+                          onPressed: () => Navigator.of(context).pop(false),
+                        ),
+                        FlatButton(
+                          child: Text('确定'),
+                          onPressed: () {
+                            loadClearGoods(context,goodsModels[i].orderId,token,i);
+                          },
+                        ),
+                      ],
+                    );
+                  }
+              );
+            },
+          ),
+        ],
+      ));
+    }
+    mGoodsCard.add(Container(
+      height: AppSize.height(140),
+    ));
+    content = Column(
+      children: mGoodsCard,
+    );
+    return content;
   }
 
-  void loadClearGoods(BuildContext context,String orderId,String token) async{
+  void loadClearGoods(BuildContext context,String orderId,String token,int index) async{
     MsgEntity entity = await ClearDao.fetch(orderId,token);
     if(entity?.msgModel != null){
       if(entity.msgModel.code==20000){
+
         Navigator.of(context).pop(true);
+        goodsModels.removeAt(index);
         eventBus.fire(new GoodsNumInEvent("clear"));
       }
       DialogUtil.buildToast(entity.msgModel.msg);
