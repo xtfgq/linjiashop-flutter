@@ -141,14 +141,12 @@ class _CartPageState extends State<CartPage> {
       if("fail"==event.text&&!AppConfig.isUser) {
         AppConfig.isUser=true;
         DialogUtil.buildToast("请求失败~");
-
-        setState(() {
-
-          goodsModels.clear();
-          _layoutState = LoadState.State_Error;
-        });
         Routes.instance.navigateTo(context, Routes.login_page);
         clearUser();
+        setState(() {
+          _layoutState = LoadState.State_Error;
+        });
+
       }
     });
 

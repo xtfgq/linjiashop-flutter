@@ -104,7 +104,6 @@ class CartItem extends StatelessWidget {
     MsgEntity entity = await ClearDao.fetch(orderId,token);
     if(entity?.msgModel != null){
       if(entity.msgModel.code==20000){
-
         Navigator.of(context).pop(true);
         goodsModels.removeAt(index);
         eventBus.fire(new GoodsNumInEvent("clear"));

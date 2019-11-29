@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_app/page/cart_page.dart';
+import 'package:flutter_app/page/member_page.dart';
 import 'package:flutter_app/page/orderform_page.dart';
 import 'package:flutter_app/page/personal_page.dart';
 import 'package:flutter_app/page/search_page.dart';
@@ -30,7 +31,7 @@ final List<Widget> pages = <Widget>[
   HomePage(),
   SearchPage(),
   CartPage(),
-  PersonalPage()
+  MemberPage()
 ];
 
 class _IndexPageState extends State<IndexPage>  with AutomaticKeepAliveClientMixin{
