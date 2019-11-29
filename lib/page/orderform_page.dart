@@ -1,4 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/common.dart';
+import 'package:flutter_app/dao/get_order_dao.dart';
+import 'package:flutter_app/models/order_entity.dart';
+import 'package:flutter_app/page/card_order.dart';
+import 'package:flutter_app/utils/constants.dart';
+import 'package:flutter_app/utils/dialog_utils.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_easyrefresh/material_footer.dart';
 import 'package:flutter_easyrefresh/material_header.dart';
@@ -9,6 +15,8 @@ import 'package:flutter_app/utils/app_size.dart';
 import 'package:flutter_app/view/app_topbar.dart';
 import 'package:flutter_app/view/custom_view.dart';
 import 'package:flutter_app/view/customize_appbar.dart';
+
+import 'load_state_layout.dart';
 
 ///
 /// app 订单页
@@ -22,12 +30,13 @@ class OrderFormPage extends StatefulWidget {
 
 class _OrderFormPageState extends State<OrderFormPage> with AutomaticKeepAliveClientMixin,
     SingleTickerProviderStateMixin{
+  double width=0;
   final List<Tab> myTabs = <Tab>[
-    Tab(text: '全部'),
+
     Tab(text: '待付款'),
-    Tab(text: '待完成'),
-    Tab(text: '待评价'),
-    Tab(text: '售后'),
+    Tab(text: '待发货'),
+    Tab(text: '已发货'),
+    Tab(text: '已完成'),
   ];
 
   final ValueNotifier<OrderFormEntity> orderFormData
@@ -49,10 +58,13 @@ class _OrderFormPageState extends State<OrderFormPage> with AutomaticKeepAliveCl
   void initState() {
     _initTabView();
 
-    loadData();
+
+
+//    loadData();
     mController = TabController(
       length: myTabs.length,
       vsync: this,
+      initialIndex: AppConfig.orderIndex,
     );
     super.initState();
   }
@@ -64,10 +76,14 @@ class _OrderFormPageState extends State<OrderFormPage> with AutomaticKeepAliveCl
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    final screenWidth = Screen.width();
+    if(myTabs.length>0) {
+      width=(screenWidth / myTabs.length)  - 10;
+    }
     return Scaffold(
       appBar: MyAppBar(
         preferredSize: Size.fromHeight(AppSize.height(160)),
-        child: CommonTopBar(title: "订单"),
+        child:CommonBackTopBar(title: "订单",onBack:()=>Navigator.pop(context)),
       ),
       body: Container(
         color: Color(0xfff5f6f7),
@@ -87,8 +103,8 @@ class _OrderFormPageState extends State<OrderFormPage> with AutomaticKeepAliveCl
                       indicatorWeight:1.0,
                       unselectedLabelColor: Color(0xff333333),
                       labelStyle: TextStyle(fontSize: AppSize.sp(44)),
-                      indicatorPadding:EdgeInsets.only(left:AppSize.width(30),right: AppSize.width(70)),
-                      labelPadding:EdgeInsets.only(left:AppSize.width(30),right: AppSize.width(70)),
+                      indicatorPadding:EdgeInsets.only(left:AppSize.width(width),right: AppSize.width(width)),
+                      labelPadding:EdgeInsets.only(left:AppSize.width(width),right: AppSize.width(width)),
                       tabs: myTabs,
                     ),
                   )]
@@ -124,14 +140,34 @@ class OrderFormTabView extends StatefulWidget {
 class _OrderFormTabViewState extends State<OrderFormTabView> {
   GlobalKey<RefreshHeaderState> _headerKey = GlobalKey<RefreshHeaderState>();
   GlobalKey<RefreshFooterState> _footerKey = GlobalKey<RefreshFooterState>();
-
-  List<OrderFormListItem> listData;
+  LoadState _layoutState = LoadState.State_Loading;
+  List<OrderModel> listData = List();
+  int page=1;
 
   @override
   void initState() {
     widget.data.addListener(notifyDataChange);
-    listData = _getDataList();
+    getOrder();
     super.initState();
+  }
+  getOrder(){
+    switch(widget.currentIndex){
+      case 0:
+        loadData(1,page,AppConfig.token);
+        break;
+      case 1:
+        loadData(2,page,AppConfig.token);
+        break;
+
+      case 2:
+        loadData(3,page,AppConfig.token);
+        break;
+      case 3:
+        loadData(4,page,AppConfig.token);
+        break;
+
+
+    }
   }
 
   @override
@@ -139,57 +175,91 @@ class _OrderFormTabViewState extends State<OrderFormTabView> {
     widget.data.removeListener(notifyDataChange);
     super.dispose();
   }
+  void loadData(int status,int page,String token)async{
+    OrderEntity entity= await OrderQueryDao.fetch(status, page, token);
 
-  List<OrderFormListItem> _getDataList(){
-    var itemList = widget.data.value !=null ?
-        widget.data.value.items : <OrderFormListItem>[];
+    if(entity?.orderModel != null){
+      if(entity.orderModel.length > 0){
+        List<OrderModel> orderModelTmp = List();
+        entity.orderModel.forEach((el){
+          orderModelTmp.add(el);
+        });
+        if(mounted) {
+          setState(() {
+            _layoutState = LoadState.State_Success;
+            listData.clear();
+            listData.addAll(orderModelTmp);
+          });
+        }
+      }else{
+        if(mounted) {
+          if(page==1) {
+            setState(() {
+              _layoutState = LoadState.State_Empty;
+            });
+          }else{
+            DialogUtil.buildToast('没有更多数据');
+          }
+        }
 
-    switch(widget.currentIndex){
-      case 0:
-        return itemList;
-      case 1:
-        return List.of(itemList.where((ele)=>ele.type == OrderForm.payment));
-      case 2:
-        return List.of(itemList.where((ele)=>ele.type == OrderForm.pending));
-      case 3:
-        return List.of(itemList.where((ele)=>ele.type == OrderForm.comment));
-      case 4:
-        return List.of(itemList.where((ele)=>ele.type == OrderForm.afterSale));
+      }
+    }else{
+      if(mounted) {
+        setState(() {
+          _layoutState = LoadState.State_Error;
+        });
+      }
     }
-    return listData;
+
   }
 
-
   void notifyDataChange(){
-    setState((){
-      listData = _getDataList();
-    });
+    getOrder();
+
   }
 
   @override
   Widget build(BuildContext context) {
+    return LoadStateLayout(
+        state: _layoutState,
+        errorRetry: () {
+          setState(() {
+            _layoutState = LoadState.State_Loading;
+          });
+          getOrder();
+        }, //错误按钮点击过后进行重新加载
+        successWidget:_getContent()
+    );
+
+  }
+  Widget _getContent(){
     return Container(
       margin: EdgeInsets.only(top: AppSize.height(30)),
+
       child: EasyRefresh(
-        refreshHeader: MaterialHeader(
-          key: _headerKey,
-        ),
-        refreshFooter: MaterialFooter(
-          key: _footerKey,
-        ),
-        onRefresh: () async {
+          refreshHeader: MaterialHeader(
+            key: _headerKey,
+          ),
+          refreshFooter: MaterialFooter(
+            key: _footerKey,
+          ),
+          onRefresh: () async {
+            page=1;
+            getOrder();
 
-        },
-        loadMore:  () async {
+          },
+          loadMore:  () async {
+            page++;
+            getOrder();
+          },
+          child:
+          ListView(
+            children: <Widget>[
+              OrderCard(orderModleDataList: listData)
 
-        },
-        child: ListView.builder(
-            itemCount: listData.length,
-            itemBuilder: (context, i) {
-              return InkWell(
-                onTap: ()=>navigate(listData[i].id),
-                  child: OrderFormCard(item: listData[i]));
-            }),
+            ],
+          )
+
       ),
     );
   }

@@ -1,9 +1,11 @@
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/models/order_form_entity.dart';
 import 'package:flutter_app/page/details/order_details.dart';
 import 'package:flutter_app/page/details/product_details.dart';
 import 'package:flutter_app/page/details/store_details.dart';
 import 'package:flutter_app/page/index_page.dart';
+import 'package:flutter_app/page/orderform_page.dart';
 import 'package:flutter_app/page/reg_and_login.dart';
 import 'package:flutter_app/page/secondary/card_voucher.dart';
 import 'package:flutter_app/page/secondary/edit_profile.dart';
@@ -56,8 +58,9 @@ class Routes {
   static const shop_reward = '/shop_reward';
 
   static const login_page = '/login_page';
+  static const order_page = '/order_page';
 
-  static const registered_page = '/registered_page';
+
 
   void _config() {
     router.define(
@@ -133,7 +136,8 @@ class Routes {
         shop_reward, handler: Handler(handlerFunc: (context, params) => ShopRewardPage()));
     router.define(
         login_page, handler: Handler(handlerFunc: (context, params) => RegPageAndLoginPage()));
-
+    router.define(
+        order_page, handler: Handler(handlerFunc: (context, params) => OrderFormPage()));
   }
 
   /**

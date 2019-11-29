@@ -28,7 +28,7 @@ class _CartPageState extends State<CartPage> {
   @override
   void initState() {
     _isLoading=true;
-    _getTokenInfo();
+    loadCartData(AppConfig.token);
     print("--*-- CartPage");
     super.initState();
   }
@@ -48,7 +48,7 @@ class _CartPageState extends State<CartPage> {
               _layoutState = LoadState.State_Loading;
               });
               _isLoading=true;
-              _getTokenInfo();
+
 
               },
               successWidget: _getContent(context)
@@ -66,7 +66,7 @@ class _CartPageState extends State<CartPage> {
         children: <Widget>[
                ListView(
           children: <Widget>[
-            CartItem(token,goodsModels),
+            CartItem(goodsModels),
            ],
          ),
                 Positioned(
@@ -80,20 +80,7 @@ class _CartPageState extends State<CartPage> {
 
     }
   }
-  _getTokenInfo() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    token = prefs.getString("token");
-    if(null==token){
-      Routes.instance.navigateTo(context, Routes.login_page);
-      return;
-    }
-    if(token.isEmpty){
-      Routes.instance.navigateTo(context, Routes.login_page);
-      return;
-    }
-    if(token.isNotEmpty)
-    loadCartData(token);
-  }
+
   void loadCartData(String token)async{
 
       CartGoodsQueryEntity entity = await CartQueryDao.fetch(token);
@@ -123,6 +110,7 @@ class _CartPageState extends State<CartPage> {
         if(mounted) {
           setState(() {
             _layoutState = LoadState.State_Error;
+
           });
         }
       }
@@ -133,16 +121,12 @@ class _CartPageState extends State<CartPage> {
   ///监听Bus events
   void _listen() {
     eventBus.on<UserLoggedInEvent>().listen((event) {
-      if("sucuss"==event.text) {
-        AppConfig.isUser=false;
-        _getTokenInfo();
 
-      }
       if("fail"==event.text&&!AppConfig.isUser) {
         AppConfig.isUser=true;
         DialogUtil.buildToast("请求失败~");
         Routes.instance.navigateTo(context, Routes.login_page);
-        clearUser();
+       AppConfig.token='';
         setState(() {
           _layoutState = LoadState.State_Error;
         });
@@ -173,11 +157,5 @@ class _CartPageState extends State<CartPage> {
 
     });
   }
-  clearUser() async{
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString("avatar","");
-    prefs.setString("token","");
-    prefs.setString("nickName","");
-    prefs.setString("mobile","");
-  }
+
 }

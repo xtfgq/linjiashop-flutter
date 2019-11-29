@@ -289,14 +289,14 @@ class OrderFormCard extends StatelessWidget {
     switch (item.type) {
       case OrderForm.payment:
         return <Widget>[_buildOutBtn("立即支付")];
-      case OrderForm.pending:
-        return <Widget>[_buildOutBtn("确认完成")];
-      case OrderForm.comment:
+      case OrderForm.waitsending:
+        return <Widget>[_buildOutBtn("确认发货")];
+      case OrderForm.aftersending:
         return <Widget>[Padding(
           padding: EdgeInsets.only(right: AppSize.width(30)),
           child: _buildOutBtn("再次订购"),
-        ), _buildOutBtn("评价得积分")];
-      case OrderForm.afterSale:
+        ), _buildOutBtn("已发货")];
+      case OrderForm.finished:
         return <Widget>[
           Padding(
             padding: EdgeInsets.only(right: AppSize.width(30)),

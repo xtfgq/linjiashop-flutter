@@ -30,7 +30,9 @@ class CardGoods extends StatelessWidget {
             imgUrl:imgUrl+goodsModleDataList[i].pic,
             descript: goodsModleDataList[i].descript,
             number: "x"+goodsModleDataList[i].num.toString(),
-          )));
+          )
+      )
+      );
     }
     content = Column(
       children: mGoodsCard,

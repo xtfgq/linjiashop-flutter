@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/common.dart' as prefix0;
 import 'package:flutter_app/dao/login_dao.dart';
 import 'package:flutter_app/dao/login_reg_dao.dart';
 import 'package:flutter_app/models/login_entity.dart';
@@ -265,7 +266,9 @@ class _RegAndLoginState extends State<RegPageAndLoginPage> {
     prefs.setString("token",userModel.token);
     prefs.setString("nickName",userModel.nickName);
     prefs.setString("mobile",userModel.mobile);
+
     eventBus.fire(new UserLoggedInEvent("sucuss"));
+    AppConfig.token=userModel.token;
     AppConfig.isUser=false;
     Navigator.pop(context);
   }

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+
 
 class CartGoodsQueryEntity {
 	List<GoodsListModel> goods;

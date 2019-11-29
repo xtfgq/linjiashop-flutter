@@ -60,6 +60,7 @@ class ThemeTextStyle{
   static final personalShopNameStyle = TextStyle(fontSize: AppSize.sp(52),color: Color(0xff333333));
   static final detailStyle = TextStyle(fontSize: AppSize.sp(44),color: Color(0xff999999));
   static final detailStylePrice = TextStyle(fontSize: AppSize.sp(44),color: Color(0xffee4646));
+  static final orderStylePrice = TextStyle(fontSize: AppSize.sp(44),color: Color(0xffffffff));
   static final personalNumStyle = TextStyle(
       fontSize: AppSize.sp(44),
       color: ThemeColor.appBarTopBg,

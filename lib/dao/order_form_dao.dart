@@ -14,15 +14,15 @@ class OrderFormDao{
             break;
           case 1:
             item..status='订单已支付'
-              ..type = OrderForm.pending;
+              ..type = OrderForm.waitsending;
             break;
           case 2:
             item..status='订单已完成'
-              ..type = OrderForm.comment;
+              ..type = OrderForm.aftersending;
             break;
           case 3:
             item..status='订单已评价'
-              ..type = OrderForm.afterSale;
+              ..type = OrderForm.finished;
             break;
         }
         return item..storeName="香奈儿品牌店"

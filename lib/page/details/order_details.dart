@@ -283,14 +283,14 @@ class _OrderDetailsState extends State<OrderDetails> {
             child: _buildOutBtn('立即付款',false),
           )
         ];
-      case OrderForm.pending:
+      case OrderForm.waitsending:
         return [
           Padding(
             padding: EdgeInsets.symmetric(horizontal: AppSize.width(30)),
             child: _buildOutBtn('确认完成',false),
           )
         ];
-      case OrderForm.comment:
+      case OrderForm.aftersending:
         return [
           _buildOutBtn('再来一单',false),
           Padding(
@@ -298,7 +298,7 @@ class _OrderDetailsState extends State<OrderDetails> {
             child: _buildOutBtn('评价得积分',false),
           )
         ];
-      case OrderForm.afterSale:
+      case OrderForm.finished:
         return [
           _buildOutBtn('再来一单',false),
           Padding(

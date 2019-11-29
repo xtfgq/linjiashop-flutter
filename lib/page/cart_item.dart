@@ -1,6 +1,7 @@
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/common.dart';
 
 import 'package:flutter_app/dao/clear_goods_dao.dart';
 import 'package:flutter_app/models/cart_goods_query_entity.dart';
@@ -14,11 +15,11 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 
 class CartItem extends StatelessWidget {
 
-  final String token;
+
   final  List<GoodsModel> goodsModels;
 
 
-  CartItem(this.token,this.goodsModels);
+  CartItem(this.goodsModels);
   String imgUrl = "http://linjiashop-mobile-api.microapp.store/file/getImgStream?idFile=";
   @override
   Widget build(BuildContext context) {
@@ -54,7 +55,7 @@ class CartItem extends StatelessWidget {
             children: <Widget>[
               _cartCheckBt(context,goodsModels[i]),
               _cartImage(goodsModels[i]),
-              _cartGoodsName(goodsModels[i],token),
+              _cartGoodsName(goodsModels[i],AppConfig.token),
             ],
           ),
         ) ,
@@ -79,7 +80,7 @@ class CartItem extends StatelessWidget {
                         FlatButton(
                           child: Text('确定'),
                           onPressed: () {
-                            loadClearGoods(context,goodsModels[i].orderId,token,i);
+                            loadClearGoods(context,goodsModels[i].orderId,AppConfig.token,i);
                           },
                         ),
                       ],
@@ -110,7 +111,7 @@ class CartItem extends StatelessWidget {
       }
       DialogUtil.buildToast(entity.msgModel.msg);
     }else{
-      DialogUtil.buildToast("服务器错误~");
+      DialogUtil.buildToast("服务器错误2~");
     }
   }
   //多选按钮
@@ -163,7 +164,7 @@ class CartItem extends StatelessWidget {
               Text('￥${(item.price/100).toStringAsFixed(2)}',
                   textAlign: TextAlign.left,
                   style: ThemeTextStyle.cardPriceStyle),
-              CartCount(item,token)
+              CartCount(item)
             ],
           ),
         ),

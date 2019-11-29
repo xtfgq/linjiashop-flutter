@@ -31,13 +31,13 @@ class _ProductDetailsState extends State<ProductDetails>  {
   int num = 0;
   LoadState _loadStateDetails=LoadState.State_Loading;
   GoodsModelDetail goodsModel;
-  String token;
+
 
   @override
   void initState() {
     loadData();
-    _getTokenInfo();
-    _listen();
+
+
     super.initState();
   }
 
@@ -61,18 +61,7 @@ class _ProductDetailsState extends State<ProductDetails>  {
       });
     }
   }
-  _getTokenInfo() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    token = prefs.getString("token");
-    if(token==null&&!AppConfig.isUser){
-      AppConfig.isUser=true;
-      Routes.instance.navigateTo(context, Routes.login_page);
-      return;
-    }
-    if(token.isNotEmpty){
-      loadCartData(token);
-    }
-  }
+
   List<String> urls=List();
   @override
   Widget build(BuildContext context) {
@@ -142,11 +131,8 @@ class _ProductDetailsState extends State<ProductDetails>  {
             children: <Widget>[
               InkWell(
                 onTap: (){
-                  if(token==null){
-                    Routes.instance.navigateTo(context, Routes.login_page);
-                    return;
-                  }
-                  if(token.isEmpty)  {
+
+                  if(AppConfig.token.isEmpty)  {
                     Routes.instance.navigateTo(context, Routes.login_page);
                     return;
                   }
@@ -190,15 +176,12 @@ class _ProductDetailsState extends State<ProductDetails>  {
 
           InkWell(
             onTap: ()async {
-              if(token==null){
+
+              if(AppConfig.token.isEmpty)  {
                 Routes.instance.navigateTo(context, Routes.login_page);
                 return;
               }
-              if(token.isEmpty)  {
-                Routes.instance.navigateTo(context, Routes.login_page);
-                return;
-              }
-              addCart(widget.id, 1, token);
+              addCart(widget.id, 1, AppConfig.token);
             },
             child: Container(
               alignment: Alignment.center,
@@ -213,11 +196,8 @@ class _ProductDetailsState extends State<ProductDetails>  {
           ),
           InkWell(
             onTap: (){
-              if(token==null){
-                Routes.instance.navigateTo(context, Routes.login_page);
-                return;
-              }
-              if(token.isEmpty)  {
+
+              if(AppConfig.token.isEmpty)  {
                 Routes.instance.navigateTo(context, Routes.login_page);
                 return;
               }
@@ -251,25 +231,11 @@ class _ProductDetailsState extends State<ProductDetails>  {
       }
       DialogUtil.buildToast(entity.cartModel.msg);
     }else{
-      DialogUtil.buildToast("服务器错误~");
+      DialogUtil.buildToast("flutter_app~");
     }
 
   }
-  ///监听Bus events
-  void _listen() {
-    eventBus.on<UserLoggedInEvent>().listen((event) {
-      if("sucuss"==event.text) {
-        AppConfig.isUser=false;
-        _getTokenInfo();
-      }
-      if("fail"==event.text&& !AppConfig.isUser) {
-        AppConfig.isUser=true;
-        DialogUtil.buildToast("token过期~");
-        clearUser();
-        Routes.instance.navigateTo(context, Routes.login_page);
-      }
-    });
-  }
+
 
   void loadCartData(String token)async{
     CartGoodsQueryEntity entity = await CartQueryDao.fetch(token);
@@ -286,15 +252,12 @@ class _ProductDetailsState extends State<ProductDetails>  {
       }
 
     }else{
-      DialogUtil.buildToast("服务器错误~");
+      DialogUtil.buildToast("服务器错误1~");
     }
   }
   clearUser() async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString("avatar","");
-    prefs.setString("token","");
-    prefs.setString("nickName","");
-    prefs.setString("mobile","");
+    prefs.clear();
   }
 
 }

@@ -9,10 +9,12 @@ import 'package:flutter_app/receiver/event_bus.dart';
 import 'package:flutter_app/utils/app_size.dart';
 import 'package:flutter_app/utils/dialog_utils.dart';
 
+import '../common.dart';
+
 class CartCount extends StatelessWidget {
   GoodsModel item;
-  String token;
-  CartCount(this.item,this.token);
+
+  CartCount(this.item);
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -36,7 +38,7 @@ class CartCount extends StatelessWidget {
   Widget _reduceBtn(context){
     return InkWell(
       onTap: (){
-        loadReduce(item.orderId,item.countNum-1,token);
+        loadReduce(item.orderId,item.countNum-1,AppConfig.token);
       },
       child: Container(
         width:AppSize.width(55),
@@ -62,7 +64,7 @@ class CartCount extends StatelessWidget {
       }
       DialogUtil.buildToast(entity.msgModel.msg);
     }else{
-      DialogUtil.buildToast("服务器错误~");
+      DialogUtil.buildToast("服务器错误3~");
     }
 
   }
@@ -71,7 +73,7 @@ class CartCount extends StatelessWidget {
   Widget _addBtn(context){
     return InkWell(
       onTap: (){
-        addCart(item.id,1,token);
+        addCart(item.id,1,AppConfig.token);
       },
       child: Container(
         width:AppSize.width(55),
@@ -97,7 +99,7 @@ class CartCount extends StatelessWidget {
       }
       DialogUtil.buildToast(entity.cartModel.msg);
     }else{
-      DialogUtil.buildToast("服务器错误~");
+      DialogUtil.buildToast("服务器错误4~");
     }
 
   }

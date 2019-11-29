@@ -7,9 +7,9 @@ class OrderFormEntity {
 
 enum OrderForm{
   payment,
-  pending,
-  comment,
-  afterSale
+  waitsending,
+  aftersending,
+  finished
 }
 
 abstract class OrderFormListItem {

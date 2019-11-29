@@ -1,10 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_app/common.dart';
 import 'package:flutter_app/page/cart_page.dart';
 import 'package:flutter_app/page/member_page.dart';
-import 'package:flutter_app/page/orderform_page.dart';
-import 'package:flutter_app/page/personal_page.dart';
+
 import 'package:flutter_app/page/search_page.dart';
 import 'package:flutter_app/receiver/event_bus.dart';
 import 'package:flutter_app/routes/routes.dart';
@@ -60,22 +60,25 @@ class _IndexPageState extends State<IndexPage>  with AutomaticKeepAliveClientMix
             type: BottomNavigationBarType.fixed,
             currentIndex: this.currentIndex,
             onTap: (index) async{
-              SharedPreferences prefs = await SharedPreferences.getInstance();
-              token = prefs.getString("token");
+
+
               if(index==2||index==3) {
-                if(token==null){
-                  Routes.instance.navigateTo(context, Routes.login_page);
-                  return;
+                if(AppConfig.token.isEmpty) {
+                  SharedPreferences prefs = await SharedPreferences
+                      .getInstance();
+                  if (null == prefs.getString("token")) {
+                    Routes.instance.navigateTo(context, Routes.login_page);
+                    return;
+                  }
+                  AppConfig.token = prefs.getString("token") ;
                 }
-                if (token.isNotEmpty) {
-                  setState(() {
-                    eventBus.fire(new UserLoggedInEvent("sucuss"));
-                    this.currentIndex = index;
-                    pageController.jumpToPage(index);
-                  });
-                }else{
-                  Routes.instance.navigateTo(context, Routes.login_page);
-                }
+
+
+                setState(() {
+                  this.currentIndex = index;
+                  pageController.jumpToPage(index);
+                });
+
               }else{
                 setState(() {
                   this.currentIndex = index;
@@ -102,11 +105,15 @@ class _IndexPageState extends State<IndexPage>  with AutomaticKeepAliveClientMix
     );
 
   }
+  getToken()async{
+
+  }
   final pageController = PageController();
   _getPageBody(BuildContext context){
     return PageView(
       controller: pageController,
       children: pages,
+
       physics: NeverScrollableScrollPhysics(), // 禁止滑动
     );
   }
